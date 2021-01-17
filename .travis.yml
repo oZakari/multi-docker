@@ -8,7 +8,7 @@ before_install:
   - docker build -t ozakari/react-test -f ./client/Dockerfile.dev ./client
 
 scripts:
-  - docker run ozakari/react-test npm test
+  - docker -e CI=true ozakari/react-test npm test
 
 after_success:
   - docker build -t ozakari/multi-client ./client
