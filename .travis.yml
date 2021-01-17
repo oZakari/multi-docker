@@ -1,0 +1,23 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t ozakari/react-test -f ./client/Dockerfile.dev ./client
+
+scripts:
+  - docker run ozakari/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t ozakari/multi-client ./client
+  - docker build -t ozakari/multi-nginx ./nginx
+  - docker build -t ozakari/multi-server ./server
+  - docker build -t ozakari/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take images and put in Docker Hub
+  - docker push ozakari/multi-client
+  - docker push ozakari/multi-nginx
+  - docker push ozakari/multi-server
+  - docker push ozakari/multi-worker
+  
